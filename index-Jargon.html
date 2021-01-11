@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Type Ahead 👀</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <form class="search-form">
+    <input type="text" class="search" placeholder="Enter your jargon">
+    <ul class="suggestions">
+
+    </ul>
+  </form>
+  <script>
+    const endpoint = 'https://olster11.github.io/Jargon/jargon.json';
+
+    //grabs the JSON file
+    fetch(endpoint)
+      .then(blob => blob.json())
+      .then(data => jargonArray = data)
+
+    //gabs the HTML elements
+    const searchBar = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    //
+    let jargonArray = [];
+
+
+
+
+    function findMatches(wordToMatch, jargon) {
+      return jargon.filter(item => {
+        //creates a Regex to match
+        const regex = new RegExp(`^${wordToMatch}`, 'gi');
+
+        //What we do with each JSON Object
+        return item.name.match(regex) || item.acr.match(regex);
+      })
+    }
+
+    function displayMatches() {
+      if (this.value != '') {
+        const matchArray = findMatches(this.value, jargonArray);
+        const html = matchArray.map(item => {
+          const regex = new RegExp(this.value, 'gi');
+          const name = item.name.replace(regex, `<span class="hl">${this.value}</span>`)
+
+          if (item.acr != '') {
+
+            return `
+      <li>
+<div class ="title"><span class="acr">${item.acr}</span><span class="spacer"></span>
+<div class="name">${item.name}</div></div>
+<span class="def">${item.def}</span>
+      </li>`
+
+          } else {
+
+            return `
+      <li>
+<div class ="title">
+<div class="name">${item.name}</div></div>
+<span class="def">${item.def}</span>
+      </li>`
+
+
+          }
+
+
+
+
+        })
+        suggestions.innerHTML = html.join('')
+      } else {
+        suggestions.innerHTML = '';
+      }
+    }
+    searchBar.addEventListener('keyup', displayMatches)
+
+
+
+
+  </script>
+</body>
+
+</html>
